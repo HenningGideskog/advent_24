@@ -1,2 +1,4 @@
 .session_cookie
 .cache
+build
+*/input*.txt
