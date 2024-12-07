@@ -6,5 +6,10 @@ project(AdventOfCode_2024)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add the subdirectory for Day 1
-# add_subdirectory(day1)
+# Add compile flags for warning
+add_compile_options(-Wall -Wextra -Wpedantic)
+
+add_subdirectory(utils)
+
+# Add subdirectory for individual days
+add_subdirectory(day1)
