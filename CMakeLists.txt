@@ -13,3 +13,4 @@ add_subdirectory(utils)
 
 # Add subdirectory for individual days
 add_subdirectory(day1)
+add_subdirectory(day2)
