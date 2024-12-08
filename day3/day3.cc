@@ -1,14 +1,14 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <print>
 #include <vector>
 
 using namespace std;
+using subrange = std::ranges::subrange<vector<char>::iterator, vector<char>::iterator>;
 
-string ParseNumber(vector<char>::const_iterator& parseIt, vector<char>::const_iterator end)
+string ParseNumber(vector<char>::iterator& parseIt, vector<char>::const_iterator end)
 {
     string numString{};
     for (size_t i{}; i < 3; i++)
@@ -30,7 +30,7 @@ string ParseNumber(vector<char>::const_iterator& parseIt, vector<char>::const_it
     return numString;
 }
 
-size_t ParseInstruction(vector<char>::const_iterator& parseIt, vector<char>::const_iterator end)
+size_t ParseInstruction(vector<char>::iterator& parseIt, vector<char>::const_iterator end)
 {
 
     string firstNumberString{ParseNumber(parseIt, end)};
@@ -50,26 +50,54 @@ size_t ParseInstruction(vector<char>::const_iterator& parseIt, vector<char>::con
     return firstNumber * secondNumber;
 }
 
+size_t ParseRange(subrange range)
+{
+    vector<char> mulStart{'m', 'u', 'l', '('};
+    subrange findRange = std::ranges::search(range, mulStart);
+
+    size_t result{0};
+    while (findRange.begin() != range.end())
+    {
+        vector<char>::iterator parseIt{findRange.begin() + 4};
+        result += ParseInstruction(parseIt, range.end());
+
+        subrange rest{parseIt, range.end()};
+        findRange = std::ranges::search(rest, mulStart);
+    }
+
+    return result;
+}
+
 int main()
 {
     fstream input_file{"day3/input_3.txt"};
     vector<char> input{istream_iterator<char>{input_file}, istream_iterator<char>{}};
-    vector<char> mulStart{'m', 'u', 'l', '('};
+    vector<char> doString{'d', 'o', '(', ')'};
+    vector<char> dontString{'d', 'o', 'n', '\'', 't', '(', ')'};
 
-    using subrange     = std::ranges::subrange<vector<char>::iterator, vector<char>::iterator>;
-    subrange findRange = std::ranges::search(input, mulStart);
+    /* Part 1 */
+    size_t resultPart1{};
+    resultPart1 += ParseRange(input);
+    print("Part 1: {}\n", resultPart1);
 
-    size_t result{0};
-    while (findRange.begin() != input.end())
+    /* Part 2 */
+    size_t resultPart2{};
+
+    subrange rangeToParse{input.begin(), std::ranges::search(input, dontString).begin()};
+    subrange rest{rangeToParse.end(), input.end()};
+    while (rangeToParse.begin() != input.end())
     {
-        vector<char>::const_iterator parseIt{findRange.begin() + 4};
-        result += ParseInstruction(parseIt, input.end());
+        resultPart2 += ParseRange(rangeToParse);
 
-        subrange rest{findRange.end(), input.end()};
-        findRange = std::ranges::search(rest, mulStart);
+        vector<char>::iterator nextRangeBegin{std::ranges::search(rest, doString).end()};
+        rest = subrange{nextRangeBegin, input.end()};
+
+        vector<char>::iterator nextRangeEnd{std::ranges::search(rest, dontString).begin()};
+        rangeToParse = subrange{nextRangeBegin, nextRangeEnd};
+        rest         = subrange{rangeToParse.end(), input.end()};
     }
 
-    cout << result << endl;
+    print("Part 2: {}\n", resultPart2);
 
     return 0;
 }
