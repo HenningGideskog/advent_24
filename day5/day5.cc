@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <aoclib.hpp>
 #include <fstream>
 #include <functional>
 #include <iostream>

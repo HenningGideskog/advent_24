@@ -7,9 +7,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add compile flags for warning
-add_compile_options(-Wall -Wextra -Wpedantic -g)
-
-add_subdirectory(utils)
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 # Add subdirectory for individual days
 add_subdirectory(day1)
